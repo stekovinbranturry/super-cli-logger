@@ -13,4 +13,5 @@ pnpm add @zk/logger
 ```bash
 pnpm examples:logger
 pnpm examples:prompts
+pnpm examples:spinner
 ```

@@ -74,7 +74,7 @@ async function main() {
     s.stop('Installed via pnpm');
   }
 
-  const nextSteps = `cd ${project.path}        \n${project.install ? '' : 'pnpm install\n'}pnpm dev`;
+  const nextSteps = `cd ${project.path}\n${project.install ? '' : 'pnpm install\n'}pnpm dev`;
 
   logger.note(nextSteps, 'Next steps.');
 

@@ -10,7 +10,7 @@ function main() {
 
   logger.title('logger.title: 预设样式');
   logger.message('只返回 string，需要搭配 log 使用');
-  logger.message(`${logger.clamjsGradient('logger.clamjsGradient')}
+  logger.message(`${logger.gradient('logger.Gradient')}
 ${logger.link('logger.link: https://example.com')}
 ${logger.item('logger.item')}
 ${logger.items([

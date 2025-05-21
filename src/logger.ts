@@ -1,8 +1,7 @@
 // 复制改造自：https://github.com/natemoo-re/clack/blob/main/packages/prompts/src/index.ts
 import { isCancel } from '@clack/core';
 import chalk from 'chalk';
-import debug from 'debug';
-import gradient from 'gradient-string';
+import gradientString from 'gradient-string';
 
 import {
   S_BAR,
@@ -61,7 +60,7 @@ export interface LogMessageOptions {
 }
 
 const logger = {
-  clamjsGradient: gradient('#0099F7', '#F11712'),
+  gradient: gradientString('#0099F7', '#F11712'),
 
   link(url: string, text?: string) {
     const styledUrl = chalk.underline.blue(url);
@@ -156,25 +155,6 @@ const logger = {
   },
   note,
   isCancel,
-
-  debug(namespace: string) {
-    // debug 默认的前缀，便于 DEBUG=前缀:* 的方式查看所有 debug 日志
-    const DEBUG_NAMESPACE_PREFIX = 'clamjs:';
-    const finalNameSpace = namespace.startsWith(DEBUG_NAMESPACE_PREFIX)
-      ? namespace
-      : `${DEBUG_NAMESPACE_PREFIX}${namespace}`;
-    const debugDebugger = debug(finalNameSpace);
-    return new Proxy(debugDebugger, {
-      apply(target, thisArg, argumentsList) {
-        // 按需执行，防止参数内容计算出错、阻塞正常流程。refer: https://github.com/raxjs/rax-app/pull/1029
-        if (debug.enabled(finalNameSpace)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return Reflect.apply(target, thisArg, argumentsList);
-        }
-        return;
-      },
-    });
-  },
 };
 
 export default logger;
