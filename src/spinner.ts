@@ -5,9 +5,23 @@ import chalk from 'chalk';
 import isUnicodeSupported from 'is-unicode-supported';
 import { cursor, erase } from 'sisteransi';
 
-import { S_BAR, S_STEP_CANCEL, S_STEP_DONE, S_STEP_ERROR } from './shared';
+import { S_BAR, S_STEP_CANCEL, S_STEP_DONE, S_STEP_ERROR, S_STEP_SKIPPED } from './shared';
 
 const unicode = isUnicodeSupported();
+
+const ERROR_CODE = {
+  SUCCESS: 0,
+  CANCEL: 1,
+  SKIPPED: 2,
+  ERROR: 3,
+};
+
+const ERROR_MESSAGE = {
+  [ERROR_CODE.SUCCESS]: 'Success',
+  [ERROR_CODE.CANCEL]: 'Canceled',
+  [ERROR_CODE.SKIPPED]: 'Skipped',
+  [ERROR_CODE.ERROR]: 'Something went wrong',
+};
 
 export const spinner = () => {
   const startTime = Date.now();
@@ -22,12 +36,12 @@ export const spinner = () => {
   let _message = '';
 
   const handleExit = (code: number) => {
-    const msg = code > 1 ? 'Something went wrong' : 'Canceled';
+    const msg = ERROR_MESSAGE[code];
     if (isSpinnerActive) stop(msg, code);
   };
 
-  const errorEventHandler = () => handleExit(2);
-  const signalEventHandler = () => handleExit(1);
+  const errorEventHandler = () => handleExit(ERROR_CODE.ERROR);
+  const signalEventHandler = () => handleExit(ERROR_CODE.CANCEL);
 
   const registerHooks = () => {
     // Reference: https://nodejs.org/api/process.html#event-uncaughtexception
@@ -37,7 +51,7 @@ export const spinner = () => {
     // Reference Signal Events: https://nodejs.org/api/process.html#signal-events
     process.on('SIGINT', signalEventHandler);
     process.on('SIGTERM', signalEventHandler);
-    process.on('exit', handleExit);
+    process.on('exit', signalEventHandler);
   };
 
   const clearHooks = () => {
@@ -45,7 +59,7 @@ export const spinner = () => {
     process.removeListener('unhandledRejection', errorEventHandler);
     process.removeListener('SIGINT', signalEventHandler);
     process.removeListener('SIGTERM', signalEventHandler);
-    process.removeListener('exit', handleExit);
+    process.removeListener('exit', signalEventHandler);
   };
 
   const start = (msg = '', intervalLine = true): void => {
@@ -75,11 +89,14 @@ export const spinner = () => {
     clearInterval(loop);
 
     let step = chalk.red(S_STEP_ERROR);
-    if (code === 0) {
+    if (code === ERROR_CODE.SUCCESS) {
       step = chalk.green(S_STEP_DONE);
     }
-    if (code === 1) {
+    if (code === ERROR_CODE.CANCEL) {
       step = chalk.red(S_STEP_CANCEL);
+    }
+    if (code === ERROR_CODE.SKIPPED) {
+      step = chalk.gray(S_STEP_SKIPPED);
     }
     process.stdout.write(cursor.move(-999, 0));
     process.stdout.write(erase.down(1));
@@ -130,9 +147,9 @@ export const tasks = async (tasks: Task[]) => {
     spin.start(title, index === 1);
     if (enabled) {
       const result = await task(spin.message);
-      spin.stop(result || title);
+      spin.stop(result || title, ERROR_CODE.SUCCESS);
     } else {
-      spin.stop(chalk.yellow(`${title} [SKIPPED]`));
+      spin.stop(chalk.gray(`${title} [SKIPPED]`), ERROR_CODE.SKIPPED);
     }
   }
 };

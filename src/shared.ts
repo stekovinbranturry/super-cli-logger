@@ -8,7 +8,8 @@ export const S_STEP_ACTIVE = s('◆', '*');
 export const S_STEP_CANCEL = s('■', 'x');
 export const S_STEP_ERROR = s('▲', 'x');
 export const S_STEP_SUBMIT = s('◇', 'o');
-export const S_STEP_DONE = s('✔️', 'o');
+export const S_STEP_DONE = s('✓', 'o');
+export const S_STEP_SKIPPED = s('-', '-');
 
 export const S_BAR_START = s('┌', 'T');
 export const S_BAR = s('│', '|');

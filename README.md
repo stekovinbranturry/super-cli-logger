@@ -23,3 +23,7 @@ pnpm examples:spinner
 ```
 
 prompts api 参考：[@clack/prompts](https://github.com/bombshell-dev/clack/tree/main/packages/prompts)
+
+![logger](./images/logger.png)
+![spinner](./images/spinner.png)
+![prompts](./images/prompts.png)
