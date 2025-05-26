@@ -1,14 +1,12 @@
 {
-  "name": "@zk/logger",
+  "name": "super-cli-logger",
   "version": "1.0.0",
   "description": "Beautiful cli logger",
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "files": ["dist/**"],
   "scripts": {
     "build": "tsup",
     "check-types": "tsc --noEmit",
@@ -17,8 +15,7 @@
     "examples:logger": "jiti ./examples/logger.ts",
     "examples:prompts": "jiti ./examples/prompts.ts",
     "examples:spinner": "jiti ./examples/spinner.ts",
-    "lint": "eslint . --no-error-on-unmatched-pattern",
-    "lint:fix": "eslint . --fix --no-error-on-unmatched-pattern"
+    "lint": "biome check --write ."
   },
   "dependencies": {
     "@clack/core": "^0.3.4",
@@ -29,6 +26,7 @@
     "sisteransi": "^1.0.5"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@jest/globals": "^29.7.0",
     "@types/debug": "^4.1.12",
     "@types/gradient-string": "^1.1.5",

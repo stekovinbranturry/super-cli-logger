@@ -4,15 +4,17 @@ function main() {
   console.clear();
 
   logger.intro('logger.intro: 任务开始');
-  logger.message(
-    'logger基于 @clack/prompts 封装，可以先去看 README (https://github.com/natemoo-re/clack/blob/main/packages/prompts/README.md)',
+
+  logger.title(
+    'logger.title: 预设样式 - 只返回 string，需要搭配 logger.message 使用',
   );
 
-  logger.title('logger.title: 预设样式');
-  logger.message('只返回 string，需要搭配 log 使用');
   logger.message(`${logger.gradient('logger.Gradient')}
+
 ${logger.link('logger.link: https://example.com')}
+
 ${logger.item('logger.item')}
+
 ${logger.items([
   { title: 'logger.list, 第二参数为 false', items: ['item1', 'item2'] },
   { items: ['item1', 'item2'] },
@@ -46,10 +48,13 @@ ${logger.items([
     '错误处理说明',
   );
   logger.success('logger.success');
-  logger.list([{ title: 'logger.list', items: ['item1', 'item2'] }, { items: ['item1', 'item2'] }]);
-  logger.note(`cd project\npnpm install\npnpm dev`, '下一步');
+  logger.list([
+    { title: 'logger.list', items: ['item1', 'item2'] },
+    { items: ['item1', 'item2'] },
+  ]);
+  logger.note('cd project\npnpm install\npnpm dev', '下一步');
   logger.outro('logger.outro: 任务结束');
-  logger.fatal('logger.fatal: 阻塞性错误，直接退出进程');
+  // logger.fatal('logger.fatal: 阻塞性错误，直接退出进程');
 }
 
 main();

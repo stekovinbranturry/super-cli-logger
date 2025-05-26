@@ -5,12 +5,12 @@
 import {
   ConfirmPrompt,
   GroupMultiSelectPrompt,
-  isCancel,
   MultiSelectPrompt,
   PasswordPrompt,
   SelectKeyPrompt,
   SelectPrompt,
   TextPrompt,
+  isCancel,
 } from '@clack/core';
 import chalk from 'chalk';
 
@@ -33,24 +33,31 @@ interface LimitOptionsParams<TOption> {
   style: (option: TOption, active: boolean) => string;
 }
 
-const limitOptions = <TOption>(params: LimitOptionsParams<TOption>): string[] => {
+const limitOptions = <TOption>(
+  params: LimitOptionsParams<TOption>,
+): string[] => {
   const { cursor, options, style } = params;
 
-  const paramMaxItems = params.maxItems ?? Infinity;
+  const paramMaxItems = params.maxItems ?? Number.POSITIVE_INFINITY;
   const outputMaxItems = Math.max(process.stdout.rows - 4, 0);
   // We clamp to minimum 5 because anything less doesn't make sense UX wise
   const maxItems = Math.min(outputMaxItems, Math.max(paramMaxItems, 5));
   let slidingWindowLocation = 0;
 
   if (cursor >= slidingWindowLocation + maxItems - 3) {
-    slidingWindowLocation = Math.max(Math.min(cursor - maxItems + 3, options.length - maxItems), 0);
+    slidingWindowLocation = Math.max(
+      Math.min(cursor - maxItems + 3, options.length - maxItems),
+      0,
+    );
   } else if (cursor < slidingWindowLocation + 2) {
     slidingWindowLocation = Math.max(cursor - 2, 0);
   }
 
-  const shouldRenderTopEllipsis = maxItems < options.length && slidingWindowLocation > 0;
+  const shouldRenderTopEllipsis =
+    maxItems < options.length && slidingWindowLocation > 0;
   const shouldRenderBottomEllipsis =
-    maxItems < options.length && slidingWindowLocation + maxItems < options.length;
+    maxItems < options.length &&
+    slidingWindowLocation + maxItems < options.length;
 
   return options
     .slice(slidingWindowLocation, slidingWindowLocation + maxItems)
@@ -68,7 +75,7 @@ export interface TextOptions {
   placeholder?: string;
   defaultValue?: string;
   initialValue?: string;
-  validate?: (value: string) => string | void;
+  validate?: (value: string) => string | undefined;
 }
 export const text = async (opts: TextOptions) => {
   return new TextPrompt({
@@ -79,7 +86,8 @@ export const text = async (opts: TextOptions) => {
     render() {
       const title = `${chalk.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
       const placeholder = opts.placeholder
-        ? chalk.inverse(opts.placeholder[0]) + chalk.dim(opts.placeholder.slice(1))
+        ? chalk.inverse(opts.placeholder[0]) +
+          chalk.dim(opts.placeholder.slice(1))
         : chalk.inverse(chalk.hidden('_'));
       const value = !this.value ? placeholder : this.valueWithCursor;
 
@@ -104,7 +112,7 @@ export const text = async (opts: TextOptions) => {
 export interface PasswordOptions {
   message: string;
   mask?: string;
-  validate?: (value: string) => string | void;
+  validate?: (value: string) => string | undefined;
 }
 export const password = async (opts: PasswordOptions) => {
   return new PasswordPrompt({
@@ -187,7 +195,10 @@ export interface SelectOptions<Value> {
 }
 
 export const select = async <Value>(opts: SelectOptions<Value>) => {
-  const opt = (option: Option<Value>, state: 'inactive' | 'active' | 'selected' | 'cancelled') => {
+  const opt = (
+    option: Option<Value>,
+    state: 'inactive' | 'active' | 'selected' | 'cancelled',
+  ) => {
     const label = option.label ?? String(option.value);
     switch (state) {
       case 'selected':
@@ -230,7 +241,9 @@ export const select = async <Value>(opts: SelectOptions<Value>) => {
   }).prompt() as Promise<Value>;
 };
 
-export const selectKey = async <Value extends string>(opts: SelectOptions<Value>) => {
+export const selectKey = async <Value extends string>(
+  opts: SelectOptions<Value>,
+) => {
   const opt = (
     option: Option<Value>,
     state: 'inactive' | 'active' | 'selected' | 'cancelled' = 'inactive',
@@ -238,9 +251,11 @@ export const selectKey = async <Value extends string>(opts: SelectOptions<Value>
     const label = option.label ?? String(option.value);
     if (state === 'selected') {
       return `${chalk.dim(label)}`;
-    } else if (state === 'cancelled') {
+    }
+    if (state === 'cancelled') {
       return `${chalk.strikethrough(chalk.dim(label))}`;
-    } else if (state === 'active') {
+    }
+    if (state === 'active') {
       return `${chalk.bgCyan(chalk.gray(` ${option.value} `))} ${label} ${
         option.hint ? chalk.dim(`(${option.hint})`) : ''
       }`;
@@ -259,7 +274,7 @@ export const selectKey = async <Value extends string>(opts: SelectOptions<Value>
       switch (this.state) {
         case 'submit':
           return `${title}${chalk.gray(S_BAR)}  ${opt(
-            this.options.find((opt) => opt.value === this.value)!,
+            this.options.find((opt) => opt.value === this.value),
             'selected',
           )}`;
         case 'cancel':
@@ -268,7 +283,9 @@ export const selectKey = async <Value extends string>(opts: SelectOptions<Value>
           )}`;
         default: {
           return `${title}${chalk.cyan(S_BAR)}  ${this.options
-            .map((option, i) => opt(option, i === this.cursor ? 'active' : 'inactive'))
+            .map((option, i) =>
+              opt(option, i === this.cursor ? 'active' : 'inactive'),
+            )
             .join(`\n${chalk.cyan(S_BAR)}  `)}\n${chalk.cyan(S_BAR_END)}\n`;
         }
       }
@@ -287,22 +304,32 @@ export interface MultiSelectOptions<Value> {
 export const multiselect = async <Value>(opts: MultiSelectOptions<Value>) => {
   const opt = (
     option: Option<Value>,
-    state: 'inactive' | 'active' | 'selected' | 'active-selected' | 'submitted' | 'cancelled',
+    state:
+      | 'inactive'
+      | 'active'
+      | 'selected'
+      | 'active-selected'
+      | 'submitted'
+      | 'cancelled',
   ) => {
     const label = option.label ?? String(option.value);
     if (state === 'active') {
       return `${chalk.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
         option.hint ? chalk.dim(`(${option.hint})`) : ''
       }`;
-    } else if (state === 'selected') {
+    }
+    if (state === 'selected') {
       return `${chalk.green(S_CHECKBOX_SELECTED)} ${chalk.dim(label)}`;
-    } else if (state === 'cancelled') {
+    }
+    if (state === 'cancelled') {
       return `${chalk.strikethrough(chalk.dim(label))}`;
-    } else if (state === 'active-selected') {
+    }
+    if (state === 'active-selected') {
       return `${chalk.green(S_CHECKBOX_SELECTED)} ${label} ${
         option.hint ? chalk.dim(`(${option.hint})`) : ''
       }`;
-    } else if (state === 'submitted') {
+    }
+    if (state === 'submitted') {
       return `${chalk.dim(label)}`;
     }
     return `${chalk.dim(S_CHECKBOX_INACTIVE)} ${chalk.dim(label)}`;
@@ -359,7 +386,9 @@ export const multiselect = async <Value>(opts: MultiSelectOptions<Value>) => {
           const footer = this.error
             .split('\n')
             .map((ln, i) =>
-              i === 0 ? `${chalk.yellow(S_BAR_END)}  ${chalk.yellow(ln)}` : `   ${ln}`,
+              i === 0
+                ? `${chalk.yellow(S_BAR_END)}  ${chalk.yellow(ln)}`
+                : `   ${ln}`,
             )
             .join('\n');
           return `${title + chalk.yellow(S_BAR)}  ${limitOptions({
@@ -389,7 +418,9 @@ export interface GroupMultiSelectOptions<Value> {
   required?: boolean;
   cursorAt?: Value;
 }
-export const groupMultiselect = async <Value>(opts: GroupMultiSelectOptions<Value>) => {
+export const groupMultiselect = async <Value>(
+  opts: GroupMultiSelectOptions<Value>,
+) => {
   const opt = (
     option: Option<Value>,
     state:
@@ -405,7 +436,8 @@ export const groupMultiselect = async <Value>(opts: GroupMultiSelectOptions<Valu
   ) => {
     const label = option.label ?? String(option.value);
     const isItem = typeof option.group === 'string';
-    const next = isItem && (options[options.indexOf(option) + 1] ?? { group: true });
+    const next =
+      isItem && (options[options.indexOf(option) + 1] ?? { group: true });
     const isLast = isItem && next.group === true;
     const prefix = isItem ? `${isLast ? S_BAR_END : S_BAR} ` : '';
 
@@ -413,19 +445,25 @@ export const groupMultiselect = async <Value>(opts: GroupMultiSelectOptions<Valu
       return `${chalk.dim(prefix)}${chalk.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
         option.hint ? chalk.dim(`(${option.hint})`) : ''
       }`;
-    } else if (state === 'group-active') {
+    }
+    if (state === 'group-active') {
       return `${prefix}${chalk.cyan(S_CHECKBOX_ACTIVE)} ${chalk.dim(label)}`;
-    } else if (state === 'group-active-selected') {
+    }
+    if (state === 'group-active-selected') {
       return `${prefix}${chalk.green(S_CHECKBOX_SELECTED)} ${chalk.dim(label)}`;
-    } else if (state === 'selected') {
+    }
+    if (state === 'selected') {
       return `${chalk.dim(prefix)}${chalk.green(S_CHECKBOX_SELECTED)} ${chalk.dim(label)}`;
-    } else if (state === 'cancelled') {
+    }
+    if (state === 'cancelled') {
       return `${chalk.strikethrough(chalk.dim(label))}`;
-    } else if (state === 'active-selected') {
+    }
+    if (state === 'active-selected') {
       return `${chalk.dim(prefix)}${chalk.green(S_CHECKBOX_SELECTED)} ${label} ${
         option.hint ? chalk.dim(`(${option.hint})`) : ''
       }`;
-    } else if (state === 'submitted') {
+    }
+    if (state === 'submitted') {
       return `${chalk.dim(label)}`;
     }
     return `${chalk.dim(prefix)}${chalk.dim(S_CHECKBOX_INACTIVE)} ${chalk.dim(label)}`;
@@ -469,21 +507,28 @@ export const groupMultiselect = async <Value>(opts: GroupMultiSelectOptions<Valu
           const footer = this.error
             .split('\n')
             .map((ln, i) =>
-              i === 0 ? `${chalk.yellow(S_BAR_END)}  ${chalk.yellow(ln)}` : `   ${ln}`,
+              i === 0
+                ? `${chalk.yellow(S_BAR_END)}  ${chalk.yellow(ln)}`
+                : `   ${ln}`,
             )
             .join('\n');
           return `${title}${chalk.yellow(S_BAR)}  ${this.options
             .map((option, i, options) => {
               const selected =
                 this.value.includes(option.value) ||
-                (option.group === true && this.isGroupSelected(`${option.value}`));
+                (option.group === true &&
+                  this.isGroupSelected(`${option.value}`));
               const active = i === this.cursor;
               const groupActive =
                 !active &&
                 typeof option.group === 'string' &&
                 this.options[this.cursor].value === option.group;
               if (groupActive) {
-                return opt(option, selected ? 'group-active-selected' : 'group-active', options);
+                return opt(
+                  option,
+                  selected ? 'group-active-selected' : 'group-active',
+                  options,
+                );
               }
               if (active && selected) {
                 return opt(option, 'active-selected', options);
@@ -500,14 +545,19 @@ export const groupMultiselect = async <Value>(opts: GroupMultiSelectOptions<Valu
             .map((option, i, options) => {
               const selected =
                 this.value.includes(option.value) ||
-                (option.group === true && this.isGroupSelected(`${option.value}`));
+                (option.group === true &&
+                  this.isGroupSelected(`${option.value}`));
               const active = i === this.cursor;
               const groupActive =
                 !active &&
                 typeof option.group === 'string' &&
                 this.options[this.cursor].value === option.group;
               if (groupActive) {
-                return opt(option, selected ? 'group-active-selected' : 'group-active', options);
+                return opt(
+                  option,
+                  selected ? 'group-active-selected' : 'group-active',
+                  options,
+                );
               }
               if (active && selected) {
                 return opt(option, 'active-selected', options);
@@ -539,7 +589,9 @@ export interface PromptGroupOptions<T> {
   /**
    * Control how the group can be canceled if one of the prompts is canceled.
    */
-  onCancel?: (opts: { results: Prettify<Partial<PromptGroupAwaitedReturn<T>>> }) => void;
+  onCancel?: (opts: {
+    results: Prettify<Partial<PromptGroupAwaitedReturn<T>>>;
+  }) => void;
 }
 
 type Prettify<T> = {
@@ -547,7 +599,9 @@ type Prettify<T> = {
 };
 
 export type PromptGroup<T> = {
-  [P in keyof T]: (opts: { results: T }) => void | Promise<T[P] | void>;
+  [P in keyof T]: (opts: { results: T }) =>
+    | undefined
+    | Promise<T[P] | undefined>;
 };
 
 /**

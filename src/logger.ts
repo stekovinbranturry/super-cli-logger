@@ -28,15 +28,16 @@ const note = (message = '', title = '') => {
     return new RegExp(pattern, 'gu');
   }
   const strip = (str: string) =>
-    str.replace(ansiRegex(), '').replace(/[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]/gu, 'aa');
+    str
+      .replace(ansiRegex(), '')
+      .replace(/[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]/gu, 'aa');
   const lines = `\n${message}\n`.split('\n');
   const titleLen = strip(title).length;
   const len =
     Math.max(
       lines.reduce((sum, ln) => {
-        // eslint-disable-next-line no-param-reassign
-        ln = strip(ln);
-        return ln.length > sum ? ln.length : sum;
+        const lnStrip = strip(ln);
+        return lnStrip.length > sum ? lnStrip.length : sum;
       }, 0),
       titleLen,
     ) + 2;
@@ -84,16 +85,24 @@ const logger = {
   },
 
   list(list: { title?: string; items: string[] }[]) {
-    list.forEach(({ title, items }) => {
-      logger.info(`${title ? `${title}\n` : ''}${items.map(this.item).join('\n')}`);
-    });
+    for (const { title, items } of list) {
+      logger.info(
+        `${title ? `${title}\n` : ''}${items.map(this.item).join('\n')}`,
+      );
+    }
   },
 
-  message(message = '', { symbol = chalk.gray(S_BAR) }: LogMessageOptions = {}) {
+  message(
+    message = '',
+    { symbol = chalk.gray(S_BAR) }: LogMessageOptions = {},
+  ) {
     const parts = [`${chalk.gray(S_BAR)}`];
     if (message) {
       const [firstLine, ...lines] = message.split('\n');
-      parts.push(`${symbol}  ${firstLine}`, ...lines.map((ln) => `${chalk.gray(S_BAR)}  ${ln}`));
+      parts.push(
+        `${symbol}  ${firstLine}`,
+        ...lines.map((ln) => `${chalk.gray(S_BAR)}  ${ln}`),
+      );
     }
     process.stdout.write(`${parts.join('\n')}\n`);
   },
@@ -121,9 +130,17 @@ const logger = {
     let message = '';
     if (error instanceof Error) {
       ({ message } = error);
-    } else if (typeof error === 'object' && error !== null && 'message' in error) {
+    } else if (
+      typeof error === 'object' &&
+      error !== null &&
+      'message' in error
+    ) {
       ({ message } = error as { message: string });
-    } else if (typeof error === 'object' && error !== null && 'error' in error) {
+    } else if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
       ({ error: message } = error as { error: string });
     } else {
       message = String(error);
@@ -140,15 +157,21 @@ const logger = {
   },
   intro(title = '') {
     console.log();
-    process.stdout.write(`${chalk.gray(S_BAR_START)}  ${chalk.bgCyan.bold(` ${title} `)}\n`);
+    process.stdout.write(
+      `${chalk.gray(S_BAR_START)}  ${chalk.bgCyan.bold(` ${title} `)}\n`,
+    );
   },
   outro(message = '') {
     process.stdout.write(
-      `${chalk.gray(S_BAR)}\n${chalk.gray(S_BAR_END)}  ${chalk.cyan.bold(`[DONE]`)} ${message}\n\n`,
+      `${chalk.gray(S_BAR)}\n${chalk.gray(S_BAR_END)}  ${chalk.cyan.bold(
+        '[DONE]',
+      )} ${message}\n\n`,
     );
   },
   title(message: string) {
-    this.message(chalk.bgMagenta(` ${message} `), { symbol: chalk.gray(S_CONNECT_LEFT) });
+    this.message(chalk.bgMagenta(` ${message} `), {
+      symbol: chalk.gray(S_CONNECT_LEFT),
+    });
   },
   cancel: (message = '') => {
     process.stdout.write(`${chalk.gray(S_BAR_END)}  ${chalk.red(message)}\n\n`);

@@ -48,7 +48,7 @@ export const spinner = () => {
     process.removeListener('exit', handleExit);
   };
 
-  const start = (msg: string = '', intervalLine: boolean = true): void => {
+  const start = (msg = '', intervalLine = true): void => {
     isSpinnerActive = true;
     unblock = block();
     _message = msg.replace(/\.+$/u, '');
@@ -69,7 +69,7 @@ export const spinner = () => {
     }, delay);
   };
 
-  const stop = (msg: string = '', code: number = 0): void => {
+  const stop = (msg = '', code = 0): void => {
     _message = msg || _message;
     isSpinnerActive = false;
     clearInterval(loop);
@@ -83,12 +83,14 @@ export const spinner = () => {
     }
     process.stdout.write(cursor.move(-999, 0));
     process.stdout.write(erase.down(1));
-    process.stdout.write(`${step}  ${_message} ${chalk.dim(`(${Date.now() - startTime}ms)`)}\n`);
+    process.stdout.write(
+      `${step}  ${_message} ${chalk.dim(`(${Date.now() - startTime}ms)`)}\n`,
+    );
     clearHooks();
     unblock();
   };
 
-  const message = (msg: string = ''): void => {
+  const message = (msg = ''): void => {
     _message = msg ?? _message;
   };
 
@@ -107,7 +109,9 @@ interface Task {
   /**
    * Task function
    */
-  task: (message: (string: string) => void) => string | Promise<string> | void | Promise<void>;
+  task: (
+    message: (string: string) => void,
+  ) => string | Promise<string> | void | Promise<void>;
 
   /**
    * If enabled === false the task will be skipped

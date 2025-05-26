@@ -1,4 +1,4 @@
-export { default as default } from './logger';
+export { default } from './logger';
 export {
   confirm,
   group,

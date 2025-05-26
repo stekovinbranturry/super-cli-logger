@@ -1,6 +1,14 @@
 import { setTimeout } from 'node:timers/promises';
 
-import logger, { confirm, group, multiselect, password, select, spinner, text } from '../src';
+import logger, {
+  confirm,
+  group,
+  multiselect,
+  password,
+  select,
+  spinner,
+  text,
+} from '../src';
 
 async function main() {
   console.clear();
@@ -24,7 +32,8 @@ async function main() {
           message: 'Provide a password',
           validate: (value) => {
             if (!value) return 'Please enter a password.';
-            if (value.length < 5) return 'Password should have at least 5 characters.';
+            if (value.length < 5)
+              return 'Password should have at least 5 characters.';
             return undefined;
           },
         }),
@@ -78,7 +87,7 @@ async function main() {
 
   logger.note(nextSteps, 'Next steps.');
 
-  logger.outro(`Problems? (https://example.com/issues)`);
+  logger.outro('Problems? (https://example.com/issues)');
 }
 
 main().catch(console.error);
