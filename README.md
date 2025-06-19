@@ -14,7 +14,7 @@ pnpm add super-cli-logger
 
 ## Logger
 
-![logger](http://github.com/stekovinbranturry/super-cli-logger/blob/main/.github/assets/logger.png)
+![logger](http://github.com/stekovinbranturry/super-cli-logger/raw/main/.github/assets/logger.png)
 
 Logger 提供了丰富的控制台输出功能，支持预设样式、颜色和格式化
 
@@ -99,9 +99,9 @@ chalk.bold.red.bgWhite('粗体红色文字白色背景');
 
 ## Prompts 组件
 
-![spinner](http://github.com/stekovinbranturry/super-cli-logger/blob/main/.github/assets/spinner.png)
+![spinner](http://github.com/stekovinbranturry/super-cli-logger/raw/main/.github/assets/spinner.png)
 
-![prompts](http://github.com/stekovinbranturry/super-cli-logger/blob/main/.github/assets/prompts.png)
+![prompts](http://github.com/stekovinbranturry/super-cli-logger/raw/main/.github/assets/prompts.png)
 
 ```ts
 import {
