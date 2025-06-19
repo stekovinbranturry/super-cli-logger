@@ -1,6 +1,6 @@
 {
   "name": "super-cli-logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Beautiful cli logger",
   "sideEffects": false,
   "type": "module",

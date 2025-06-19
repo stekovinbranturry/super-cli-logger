@@ -5,7 +5,13 @@ import chalk from 'chalk';
 import isUnicodeSupported from 'is-unicode-supported';
 import { cursor, erase } from 'sisteransi';
 
-import { S_BAR, S_STEP_CANCEL, S_STEP_DONE, S_STEP_ERROR, S_STEP_SKIPPED } from './shared';
+import {
+  S_BAR,
+  S_STEP_CANCEL,
+  S_STEP_DONE,
+  S_STEP_ERROR,
+  S_STEP_SKIPPED,
+} from './shared';
 
 const unicode = isUnicodeSupported();
 

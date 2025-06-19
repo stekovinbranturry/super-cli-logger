@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable max-lines */
-// @ts-nocheck 复制过来的，暂时不改, https://github.com/natemoo-re/clack/blob/main/packages/prompts/src/index.ts
+// @ts-nocheck
 import {
   ConfirmPrompt,
   GroupMultiSelectPrompt,
