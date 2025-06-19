@@ -1,10 +1,10 @@
 # super-cli-logger
 
-[@clack/prompts](https://github.com/bombshell-dev/clack/tree/main/packages/prompts) 的个人优化版本：
-- 整合了 `@clack/core` 和 `chalk`
-- 解决了中文的显示问题
-- 优化了一些用法
-- 类型更友好
+基于[@clack/prompts](https://github.com/bombshell-dev/clack/tree/main/packages/prompts) 的命令行开发工具，集成了各种类型的 log, 问答组件，任务管理等，一站式解决 CLI 开发所需的一切工具
+  - 整合了 `@clack/core` 和 `chalk`
+  - 解决了中文的显示问题
+  - 优化了一些用法
+  - 类型更友好
 
 ## Installation
 
